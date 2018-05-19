@@ -21,6 +21,7 @@ module.exports = {
     },
     "files": [
         "./index.html",
+        "./src/client/html/*.html",
         "./src/client/*.js",
         "./src/client/styles/*.css"
     ],

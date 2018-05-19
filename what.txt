@@ -25,3 +25,10 @@ Second -
     Drag the control from one container to the other.
 
 Save as a commit - "first commit".
+
+Created branch "redirect".
+
+index.html now redirects to the page being worked on.  In the <head>
+of index.html (for example) -
+
+	<meta http-equiv="refresh" content="1; URL=http://localhost:3000/src/client/html/drag-1.html" />
