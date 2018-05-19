@@ -1,0 +1,106 @@
+<! DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>split-1</title>
+
+		<style>
+			html, body {
+				padding: 8px;
+				background-color: #F6F6F6;
+				box-sizing: border-box;
+				margin: 	0px;
+			}
+
+			.gutter {
+				background-color: #eee;
+
+				background-repeat: no-repeat;
+				background-position: 50%;
+			}
+
+			.gutter.gutter-horizontal {
+				background-image: url('../../../node_modules/split.js/grips/vertical.png');
+				cursor: col-resize;
+			}
+
+			.gutter.gutter-vertical {
+				background-image: url('../../../node_modules/split.js/grips/horizontal.png');
+				cursor: ns-resize;
+			}
+
+			.split {
+			-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+					box-sizing: border-box;
+			}
+
+			.split, .gutter.gutter-horizontal {
+				float: left;
+			}	
+
+			.split, .gutter.gutter-horizontal {
+				height: 300px;
+			}					
+
+			.split {
+				overflow-y: auto;
+				overflow-x: hidden;
+			}
+
+			.parent {
+				position: absolute; 
+				left: 50px; 
+				top: 80px; 
+				width: 400px; 
+				height: 300px;
+				border: solid black 1px;
+				padding: 8px;
+
+			}
+
+			.content {
+				background-color: white;
+				border: solid gray 1px;
+				padding: 4px;
+				padding-left: 8px;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<!-- See -
+				https://github.com/nathancahill/Split.js/
+		-->
+
+		<!-- Width, height of parent element must contain the child elements.
+			Otherwise the splitter movement won't work well with the mouse.
+			Here parent size is set to 100% just to be quick and easy.
+		-->
+		<div id="parent" class="parent">
+			<div id="one" class="split content">content one</div>
+			<div id="two" class="split content">content two</div>
+		</div>
+
+        <script src="../../../node_modules/split.js/split.js"></script>
+		<script>
+
+			var s = Split ( ['#one', '#two'], {
+				direction: 		'horizontal',
+				sizes: 			[25, 75],
+				minSize: 		20,
+				cursor: 		'col-resize',
+				gutterSize: 	8,
+			//	elementStyle : 	function ( dimension, elementSize, gutterSize ) {
+			//		return { 'width': 'calc(' + elementSize + '% - ' + gutterSize + 'px)' };
+			//	},
+			//	gutterStyle: 	function ( dimension, gutterSize ) {
+			//		return { 'width': gutterSize + 'px' };
+			//	},
+			} );
+
+		</script>
+	</body>
+</html>
+
