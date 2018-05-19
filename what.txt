@@ -28,6 +28,9 @@ Save as a commit - "first commit".
 
 Created branch "redirect".
 
+See -
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
+    
 index.html now redirects to the page being worked on.  In the <head>
 of index.html (for example) -
 
