@@ -1,0 +1,89 @@
+<! DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>flex-a</title>
+		<link rel="stylesheet" href="src/client/styles/app.css">
+	</head>
+
+	<body id='app-body'>
+		<!-- See -
+				https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+		-->
+		<script>
+		//	let startX = 0, startY = 0;
+		//	let offsX  = 0, offsY  = 0;
+		//	function mousedown_handler ( ev ) {
+		//		let sW = 'mousedown_handler()';
+		//		console.log ( sW + ': ' + ev.currentTarget.id + '  ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+		//		console.log ( sW + ': ' + ev.currentTarget.id + '  ev.clientX, Y ' + ev.clientX + ', ' + ev.clientY );
+			//	startX = ev.pageX;
+			//	startY = ev.pageY;
+			//	offsX  = ev.offsetX * 4;
+			//	offsY  = ev.offsetY * 4;
+		//	}
+		//	function mouseup_handler ( ev ) {
+		//		let sW = 'mouseup_handler()';
+		//		console.log ( sW + ': ' + ev.currentTarget.id + '  ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+		//	}
+			function dragstart_handler ( ev ) {
+				let sW = 'dragstart_handler()';
+				console.log ( sW + ': ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+				console.log ( sW + ': ev.clientX, Y ' + ev.clientX + ', ' + ev.clientY );
+				// Add the target element's id to the data transfer object
+				ev.dataTransfer.setData ( "text/plain", JSON.stringify ( { drageeId: 	ev.target.id,
+																		   startX: 		ev.pageX,
+																		   startY: 		ev.pageY  } ) );
+				ev.dataTransfer.dropEffect = "move";
+				let e = document.querySelector ( '#' + ev.target.id );
+			//	ev.dataTransfer.setDragImage ( e, offsX,          offsY );
+				ev.dataTransfer.setDragImage ( e, ev.offsetX * 4, ev.offsetY * 4 );		//	* 4 ?
+			}
+			function dragover_handler ( ev ) {
+				let sW = 'dragover_handler()';
+				ev.preventDefault();
+				// Set the dropEffect to move
+				ev.dataTransfer.dropEffect = "move"
+			}
+			function drop_handler ( ev ) {
+				let sW = 'drop_handler()';
+				ev.preventDefault();
+				console.log ( sW + ': ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+				console.log ( sW + ': ev.clientX, Y ' + ev.clientX + ', ' + ev.clientY );
+				// Get the id of the target and add the moved element to the target's DOM
+				var data = JSON.parse ( ev.dataTransfer.getData ( "text" ) );
+				var dX = ev.pageX - data.startX;
+				var dY = ev.pageY - data.startY;
+			//	var dX = ev.pageX -      startX;
+			//	var dY = ev.pageY -      startY;
+				console.log ( sW + ': dX, Y ' + dX + ', ' + dY );
+				let e = document.querySelector ( '#' + data.drageeId );
+				if ( ev.target.id !== data.draggId ) {
+					ev.target.appendChild ( e );
+				} else {
+					e.style.left = (Number.parseInt ( e.style.left ) + dX).toString() + 'px';
+					e.style.top  = (Number.parseInt ( e.style.top  ) + dY).toString() + 'px';
+				}
+			}            
+		</script>
+		
+		<div id="div-root" class="a0" >
+			<div id="div-container1" class="container" style="left: 50px; top:  50px;" 
+									 ondrop="drop_handler(event);" 
+									 ondragover="dragover_handler(event);">
+				Panel A
+				<div id="div-c1" class="a1" style="left: 50px; top: 50px;" 
+											draggable="true" 
+											ondragstart="dragstart_handler(event);">
+					Control 1
+				</div>
+			</div>
+			<div id="div-container2" class="container" style="left: 50px; top: 250px;" 
+									 ondrop="drop_handler(event);" 
+									 ondragover="dragover_handler(event);">
+				Panel B
+			</div>
+		</div>
+	</body>
+</html>
+

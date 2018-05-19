@@ -1,0 +1,27 @@
+A bug/issue with Chrome (and thus, Electron) is that CSS relative position 
+does not work inside an SVG foreignObject.  This means that a code editor such 
+as CodeMirror or Monaco can not be implemented in a SVG element.
+
+This project looks at using the flex property on HTML <div> elements for parts 
+of the app where SVG will not work.
+
+Possibly looking at -
+    Drag & Drop -
+        https://bevacqua.github.io/dragula/
+        https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+    Splitting -
+        https://nathancahill.github.io/Split.js/
+            Example(s) -
+                https://nathancahill.github.io/Split.js/examples/jsfiddle.html
+
+First -
+    A  * box *  the covers the entire browser window.
+    Another box inside it that is movable.
+
+Second -
+    Two boxes (inside the "root" box that covers the entire browser window).
+    Regard these two boxes as "containers".
+    In one of the boxes - a "control" (a div with simple content).
+    Drag the control from one container to the other.
+
+Save as a commit - "first commit".
