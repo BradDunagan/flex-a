@@ -149,23 +149,56 @@
 				lft.textContent = pet;
 				pec.forEach ( e => lft.appendChild ( e ) );
 				//	Split -
-				Split(['#left', '#right'], {
+				let split = Split(['#left', '#right'], {
 					gutterSize: 6,
 					minSize: 	20,
 					snapOffset: 5,
 					cursor: 	'col-resize'
 				})
-				//	Set the background color of the paret - it will show through
+				//	Set the background color of the parent - it will show through
 				//	on the gutter.
 				pe.style.backgroundColor = 'lightgrey';
 				//	Some content in the right side panel.
 				rgt.textContent = 'side panel';
 				//	Put the sizer back.
 				pe.appendChild ( szr );
+				//	Remember the split instance.
+				eleData[pe.id + '-split'] = split;
             }	//	open_handler()
             function close_handler ( ev ) {
 				let sW = 'close_handler()';
                 console.log ( sW );
+				//  Get the panel element
+                let pe = document.querySelector ( '#rr-pe-a' );
+				//	And the sizer.  Remove it from the panel.
+				let szr = document.querySelector ( '#rr-pe-a-sizer' );
+				szr.remove();
+				//	Copy the contents of the left panel.
+				let lft = document.querySelector ( '#left' );
+				let lftt = lft.textContent.trim()
+				let lftc = Array.from ( lft.children );
+				//	Delete the right.
+				let rgt = document.querySelector ( '#right' );
+				rgt.remove();
+				//	And the left.
+				lft.remove();
+				//	Panel will be continue to be sizeable but will now have content too.
+				//	And Fix the size because content might have set padding.
+				let ow = pe.offsetWidth;
+				let oh = pe.offsetHeight;
+				pe.classList.value = 'sizeable content';
+				pe.style.width  = (Number.parseInt ( pe.style.width )  + (ow - pe.offsetWidth )).toString() + 'px';
+				pe.style.height = (Number.parseInt ( pe.style.height ) + (oh - pe.offsetHeight)).toString() + 'px';
+				//	Destroy the split.
+				eleData[pe.id + '-split'].destroy();
+				delete ( eleData[pe.id + '-split'] );
+				//  Set the conpied contents.
+				pe.textContent = lftt;
+				lftc.forEach ( e => pe.appendChild ( e ) );
+				//	Set the background color of the panel.
+				pe.style.backgroundColor = 'white';
+				//	Put the sizer back.
+				pe.appendChild ( szr );
             }
 			function positionSizer ( eleId ) {
 				let sW = 'positionSizer()';
