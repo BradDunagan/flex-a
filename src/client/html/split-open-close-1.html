@@ -1,0 +1,215 @@
+<! DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>drag-1</title>
+		<link rel="stylesheet" href="../styles/app.css">
+
+        <style>
+			.sizeable {
+				border: 	solid 1px black;
+			/*	padding: 	2px;						*/
+				position: 	absolute;
+			}
+			.sizer {
+				border:     solid 1px gray;
+				position:   absolute;
+				width:      14px;
+				height:     14px;
+			}
+			.rr-panel-control {
+				position:   absolute;
+			} 
+			.rr-panel-button {
+				height:     25px;
+			}
+			.split {
+				-webkit-box-sizing: border-box;
+					-moz-box-sizing: border-box;
+						box-sizing: border-box;
+				overflow-y: auto;
+				overflow-x: hidden;
+			}
+			.content {
+			/*	border: 1px solid #C0C0C0;				*/
+			/*	box-shadow: inset 0 1px 2px #e4e4e4;	*/
+				background-color: #fff;
+				padding-top:	2px;
+				padding-left: 	6px;
+			}
+			.gutter {
+				background-color: transparent;
+				background-repeat: no-repeat;
+				background-position: 50%;
+			}
+			.gutter.gutter-horizontal {
+				cursor: col-resize;
+				background-image: url('../../../node_modules/split.js/grips/vertical.png');
+			}
+			.gutter.gutter-vertical {
+				cursor: row-resize;
+				background-image: url('../../../node_modules/split.js/grips/horizontal.png');
+			}
+			.split.split-horizontal, .gutter.gutter-horizontal {
+				height: 100%;
+				float: left;
+			}
+        </style>
+	</head>
+
+	<body id='app-body'>
+		<!-- See -
+				https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+		-->
+		<script>
+			//	Data associated with any element.  Keys are the elements' id.
+			let eleData = {};
+			const PE_BORDER_WIDTH = 1;
+
+			function dragstart_handler ( ev ) {
+				let sW = 'dragstart_handler()';
+				console.log ( sW + ': ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+				console.log ( sW + ': ev.clientX, Y ' + ev.clientX + ', ' + ev.clientY );
+				// Add the target element's id to the data transfer object
+				ev.dataTransfer.setData ( "text/plain", JSON.stringify ( { drageeId: 	ev.target.id,
+																		   startX: 		ev.pageX,
+																		   startY: 		ev.pageY  } ) );
+				ev.dataTransfer.dropEffect = "move";
+				let e = document.querySelector ( '#' + ev.target.id );
+				ev.dataTransfer.setDragImage ( e, ev.offsetX * 4, ev.offsetY * 4 );		//	* 4 ?
+			}
+			function dragover_handler ( ev ) {
+				let sW = 'dragover_handler()';
+				ev.preventDefault();
+				// Set the dropEffect to move
+				ev.dataTransfer.dropEffect = "move"
+			}
+			function drop_handler ( ev ) {
+				let sW = 'drop_handler()';
+				ev.preventDefault();
+				ev.stopPropagation();
+				console.log ( sW + ': ev.pageX, Y ' + ev.pageX + ', ' + ev.pageY );
+				console.log ( sW + ': ev.clientX, Y ' + ev.clientX + ', ' + ev.clientY );
+				// Get the id of the target and add the moved element to the target's DOM
+				var data = JSON.parse ( ev.dataTransfer.getData ( "text" ) );
+				var dX = ev.pageX - data.startX;
+				var dY = ev.pageY - data.startY;
+				console.log ( sW + ': dX, Y ' + dX + ', ' + dY );
+				let e = document.querySelector ( '#' + data.drageeId );
+				let p = e.parentElement;
+			//	if (   (ev.target.id !== e.id)
+            //		&& (ev.target.id !== p.id) {
+			//
+			//	}
+				e.style.left   = (Number.parseInt ( e.style.left ) + dX).toString() + 'px';
+				e.style.top    = (Number.parseInt ( e.style.top  ) + dY).toString() + 'px';
+                p.style.width  = (Number.parseInt ( p.style.width )  + dX).toString() + 'px';
+                p.style.height = (Number.parseInt ( p.style.height ) + dY).toString() + 'px';
+			}
+
+
+			function createSplitPanelElement ( eleId ) {
+				let sW = 'createSplitPanelElement()';
+                console.log ( sW );
+				//	That is, create a panel that is on either side of a spliter (i.e.,
+				//	a slider/gutter). This element itself is not split.
+				let ele = document.createElement ( 'div' );
+				ele.id = eleId;
+				ele.classList.value = 'split split-horizontal content';
+				return ele;
+			}	//	createSplitPanelElement()
+            function open_handler ( ev ) {
+				let sW = 'open_handler()';
+                console.log ( sW );
+				//  Get the panel element
+                let pe = document.querySelector ( '#rr-pe-a' );
+				//	And the sizer.  Remove it from the panel.
+				let szr = document.querySelector ( '#rr-pe-a-sizer' );
+				szr.remove();
+			//	console.log ( pe.innerHTML );
+				//  Copy the current contents of the panel.
+				let pet = pe.textContent.trim()
+				let pec = Array.from ( pe.children );
+				//  Delete the current contents.
+				pe.textContent = '';
+				//	Panel is just sizelable now (no content). Set class to sizeable.
+				//	And Fix the size because making it without content might have 
+				//	removed some padding.
+				let ow = pe.offsetWidth;
+				let oh = pe.offsetHeight;
+				pe.classList.value = 'sizeable';
+				pe.style.width  = (Number.parseInt ( pe.style.width )  + (ow - pe.offsetWidth )).toString() + 'px';
+				pe.style.height = (Number.parseInt ( pe.style.height ) + (oh - pe.offsetHeight)).toString() + 'px';
+				//	Create three <div>s in the panel.
+				let lft = createSplitPanelElement ( 'left' );
+				pe.appendChild ( lft );
+				let rgt = createSplitPanelElement ( 'right' );
+				pe.appendChild ( rgt );
+				//  Put the copied contents in the left <div>.
+				lft.textContent = pet;
+				pec.forEach ( e => lft.appendChild ( e ) );
+				//	Split -
+				Split(['#left', '#right'], {
+					gutterSize: 6,
+					minSize: 	20,
+					snapOffset: 5,
+					cursor: 	'col-resize'
+				})
+				//	Set the background color of the paret - it will show through
+				//	on the gutter.
+				pe.style.backgroundColor = 'lightgrey';
+				//	Some content in the right side panel.
+				rgt.textContent = 'side panel';
+				//	Put the sizer back.
+				pe.appendChild ( szr );
+            }	//	open_handler()
+            function close_handler ( ev ) {
+				let sW = 'close_handler()';
+                console.log ( sW );
+            }
+			function positionSizer ( eleId ) {
+				let sW = 'positionSizer()';
+                console.log ( sW );
+                let pe  = document.getElementById ( eleId );
+				let szr = document.getElementById ( eleId + '-sizer' );
+				let w0 = pe.offsetWidth;
+				let h0 = pe.offsetHeight;
+				szr.style.left = w0 - szr.offsetWidth  - PE_BORDER_WIDTH + 'px';
+				szr.style.top  = h0 - szr.offsetHeight - PE_BORDER_WIDTH + 'px';
+			}
+		</script>
+		<div id="div-root" class="a0"
+						   ondrop="drop_handler(event);" 
+						   ondragover="dragover_handler(event);">
+            Split and Unsplit (open and close a side panel) -
+            <button name="btn-open" class="rr-panel-control rr-panel-button" 
+                                    style="left:50px; top:50px; width:60px;"
+                                    onclick="open_handler(event)";>
+                Open</button>
+    		<button name="btn-close" class="rr-panel-control rr-panel-button" 
+									 style="left:120px; top:50px; width:60px;"
+									 onclick="close_handler(event)";>
+                Close</button>
+			<div id="rr-pe-a" class="sizeable content" 
+							  style="left: 50px; top: 85px; width: 275px; height: 150px;" 
+							  ondrop="drop_handler(event);" 
+							  ondragover="dragover_handler(event);">
+				panel content
+                <div id="rr-pe-a-sizer" class="sizer"
+										style="left: 260px; top: 135px;"
+										draggable="true" 
+										ondragstart="dragstart_handler(event);">
+
+                </div>
+			</div>
+		</div>
+	</body>
+	<script src="../../../node_modules/split.js/split.js"></script>
+	<script>
+		document.addEventListener ( "DOMContentLoaded", function ( event ) {
+			console.log ( "DOM fully loaded and parsed" );
+			positionSizer ( 'rr-pe-a' );
+		} );
+	</script>
+</html>
+

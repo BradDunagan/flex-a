@@ -41,3 +41,22 @@ Normalize - Help make some things consistent in different browsers -
     This is used in the split.js demos.
     
 
+Scenarios -
+
+    1 -
+        Full screen (or a panel) split horizontally (or vertically).
+        One side of the split is closed.
+        Should result in the split going away and leaving the other
+        side occupying the whole screen/panel.
+        Should be able to reopen what was closed and restore the split
+        to the begining/pre-closing state.
+
+        Application - The side being opened/closed might be a properties
+        or settings list.
+
+
+size-1.html -
+    Simple sizing (with the mouse) of a simple panel (a <div>).
+
+
+    931 359-7999
