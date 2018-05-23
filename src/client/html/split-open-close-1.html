@@ -21,7 +21,9 @@
 				position:   absolute;
 			} 
 			.rr-panel-button {
-				height:     25px;
+				height:     		25px;
+				background-color: white;
+				border: 			solid 1px gray;				
 			}
 			.split {
 				-webkit-box-sizing: border-box;
@@ -149,12 +151,16 @@
 				lft.textContent = pet;
 				pec.forEach ( e => lft.appendChild ( e ) );
 				//	Split -
-				let split = Split(['#left', '#right'], {
+				let opts = {
 					gutterSize: 6,
 					minSize: 	20,
 					snapOffset: 5,
 					cursor: 	'col-resize'
-				})
+				};
+				let d = eleData[pe.id];
+				if ( d && d.split && d.split.sizes )
+					opts.sizes = d.split.sizes;
+				let split = Split ( ['#left', '#right'], opts );
 				//	Set the background color of the parent - it will show through
 				//	on the gutter.
 				pe.style.backgroundColor = 'lightgrey';
@@ -163,7 +169,12 @@
 				//	Put the sizer back.
 				pe.appendChild ( szr );
 				//	Remember the split instance.
-				eleData[pe.id + '-split'] = split;
+				if ( ! eleData[pe.id] )
+					eleData[pe.id] = {};
+				eleData[pe.id].split = { instance: split };
+				//	Buttons -
+				document.getElementById ( 'rr-btn-open' ).setAttribute ( 'disabled', true );
+				document.getElementById ( 'rr-btn-close' ).removeAttribute ( 'disabled' );
             }	//	open_handler()
             function close_handler ( ev ) {
 				let sW = 'close_handler()';
@@ -190,8 +201,10 @@
 				pe.style.width  = (Number.parseInt ( pe.style.width )  + (ow - pe.offsetWidth )).toString() + 'px';
 				pe.style.height = (Number.parseInt ( pe.style.height ) + (oh - pe.offsetHeight)).toString() + 'px';
 				//	Destroy the split.
-				eleData[pe.id + '-split'].destroy();
-				delete ( eleData[pe.id + '-split'] );
+				let split = eleData[pe.id].split;
+				split.sizes = split.instance.getSizes();
+				split.instance.destroy();
+				delete ( split.istance );
 				//  Set the conpied contents.
 				pe.textContent = lftt;
 				lftc.forEach ( e => pe.appendChild ( e ) );
@@ -199,7 +212,10 @@
 				pe.style.backgroundColor = 'white';
 				//	Put the sizer back.
 				pe.appendChild ( szr );
-            }
+				//	Buttons -
+				document.getElementById ( 'rr-btn-open' ).removeAttribute ( 'disabled' );
+				document.getElementById ( 'rr-btn-close' ).setAttribute ( 'disabled', true );
+            }	//	close_handler()
 			function positionSizer ( eleId ) {
 				let sW = 'positionSizer()';
                 console.log ( sW );
@@ -215,13 +231,16 @@
 						   ondrop="drop_handler(event);" 
 						   ondragover="dragover_handler(event);">
             Split and Unsplit (open and close a side panel) -
-            <button name="btn-open" class="rr-panel-control rr-panel-button" 
-                                    style="left:50px; top:50px; width:60px;"
-                                    onclick="open_handler(event)";>
+            <button id="rr-btn-open" name="btn-open" 
+									 class="rr-panel-control rr-panel-button" 
+                                     style="left:50px; top:50px; width:60px;"
+                                     onclick="open_handler(event)";>
                 Open</button>
-    		<button name="btn-close" class="rr-panel-control rr-panel-button" 
-									 style="left:120px; top:50px; width:60px;"
-									 onclick="close_handler(event)";>
+    		<button id="rr-btn-close" name="btn-close" 
+									  class="rr-panel-control rr-panel-button" 
+									  style="left:120px; top:50px; width:60px;"
+									  disabled
+									  onclick="close_handler(event)";>
                 Close</button>
 			<div id="rr-pe-a" class="sizeable content" 
 							  style="left: 50px; top: 85px; width: 275px; height: 150px;" 
